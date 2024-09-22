@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  db:
+    container_name: db
+    image: mysql:8.0.27
+    env_file:
+      - .env
+    ports:
+      - 3306:3306
+
+  backend:
+    container_name: backend
+    build:
+      context: ./back/
+      dockerfile: Dockerfile
+    volumes:
+      - ./back/:/go/src/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./front/
+      dockerfile: Dockerfile
+    volumes:
+      - ./front:/usr/src/app
+    ports:
+      - "3000:3000"
+    tty: true
+    stdin_open: true
+volumes:
+  db-data:
+    driver: local
